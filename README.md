@@ -2,7 +2,6 @@ Terraform module to provision an EC2 instance running with Http
 Not intended for production use
 
 '''hcl
-
 terraform {
 
 }
