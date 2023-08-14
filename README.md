@@ -1,7 +1,7 @@
 Terraform module to provision an EC2 instance running with Http
 Not intended for production use
 
-'''hcl
+```hcl
 terraform {
 
 }
@@ -24,4 +24,4 @@ output "ip_pubblico_main" {
   value = module.apache.ip_pubblico
   sensitive = false
 }
-'''
+```
