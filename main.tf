@@ -16,8 +16,16 @@ data "aws_ami" "eu-amazon-linux2" {
   }
 }
 
-data "aws_vpc" "main" {
+data "aws_vpc" "cloud_privato" {
   id = var.vpc_id
+}
+
+data "aws_subnets" "subnets" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.cloud_privato.id]
+  }
+  depends_on = [data.aws_vpc.cloud_privato]
 }
 
 resource "aws_key_pair" "deployer" {
@@ -26,12 +34,16 @@ resource "aws_key_pair" "deployer" {
 }
 
 
+
 resource "aws_instance" "app_server" {
-  ami           = "${data.aws_ami.eu-amazon-linux2.id}"
+  ami                    = "${data.aws_ami.eu-amazon-linux2.id}"
+  subnet_id              = element(data.aws_subnets.subnets.ids,5)
+  associate_public_ip_address = true
   instance_type          = var.instance_type
   key_name               = aws_key_pair.deployer.key_name
   vpc_security_group_ids = [aws_security_group.sg_app_server.id]
   user_data              = data.template_file.user_data.rendered
+  
 
   tags = {
     Name = var.server_name
@@ -43,7 +55,7 @@ resource "aws_instance" "app_server" {
 resource "aws_security_group" "sg_app_server" {
   name        = "sg_app_server"
   description = "Allow HTTP and SSH"
-  vpc_id      = data.aws_vpc.main.id
+  vpc_id      = data.aws_vpc.cloud_privato.id
 
   ingress = [{
     description      = "HTTP"
