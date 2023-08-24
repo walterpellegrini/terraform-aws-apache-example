@@ -37,7 +37,7 @@ resource "aws_key_pair" "deployer" {
 
 resource "aws_instance" "app_server" {
   ami                    = "${data.aws_ami.eu-amazon-linux2.id}"
-  subnet_id              = element(data.aws_subnets.subnets.ids,5)
+  subnet_id              = element(data.aws_subnets.subnets.ids,1)
   associate_public_ip_address = true
   instance_type          = var.instance_type
   key_name               = aws_key_pair.deployer.key_name
